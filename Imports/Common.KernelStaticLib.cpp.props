@@ -1,0 +1,182 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+ 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>  
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|Win32'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|x64'">
+    <TargetExt>.lib</TargetExt>
+    <OutDir>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+ 
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|Win32'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|Win32'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|x64'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|x64'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|Win32'">
+    <ClCompile>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">
+    <ClCompile>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|Win32'">
+    <ClCompile>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|x64'">
+    <ClCompile>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|x64'">
+    <ClCompile>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(RootFolder)\lib\debug\$(DDKSpec)\KM\$(DDKPlatform)\$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  
+</Project>

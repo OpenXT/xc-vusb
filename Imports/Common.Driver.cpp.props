@@ -1,0 +1,220 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|Win32'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|Win32'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|Win32'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|Win32'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|x64'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|x64'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|x64'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|x64'">
+    <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
+    <OutDir>$(IntDir)</OutDir>
+    <IncludePath>$(RootFolder)\inc;$(RootFolder)\Drivers\inc;$(ProjectDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|Win32'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|Win32'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|Win32'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|Win32'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|x64'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|x64'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|x64'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|x64'">
+    <ClCompile>
+      <WppEnabled>false</WppEnabled>
+      <WppScanConfigurationData Condition="'%(ClCompile. ScanConfigurationData)'  == ''">trace.h</WppScanConfigurationData>
+      <WppKernelMode>true</WppKernelMode>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(RootFolder)\lib\$(DDKSpec)\KM\$(DDKPlatform)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vciklib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  
+  <!-- -->
+</Project>

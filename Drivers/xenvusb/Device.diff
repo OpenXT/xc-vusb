@@ -1,0 +1,379 @@
+--- xce-windows.svn/Drivers/xcevusb/Device.cpp	2014-03-31 20:29:59.347486700 -0400
++++ xc-windows.git/xc-vusb/Drivers/xenvusb/Device.cpp	2014-04-04 11:42:35.976600500 -0400
+@@ -18,7 +18,7 @@
+ };
+ typedef struct USB_FDO_INTERRUPT_CONTEXT * PUSB_FDO_INTERRUPT_CONTEXT;
+ 
+-WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(USB_FDO_INTERRUPT_CONTEXT, DeviceGetInterruptContext)
++// --XT-- WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(USB_FDO_INTERRUPT_CONTEXT, DeviceGetInterruptContext)
+ 
+ EVT_WDF_DEVICE_PREPARE_HARDWARE FdoEvtDevicePrepareHardware;
+ EVT_WDF_DEVICE_RELEASE_HARDWARE FdoEvtDeviceReleaseHardware;
+@@ -27,14 +27,17 @@
+ EVT_WDF_DEVICE_D0_EXIT FdoEvtDeviceD0Exit;
+ EVT_WDF_DEVICE_SURPRISE_REMOVAL FdoEvtDeviceSurpriseRemoval;
+ EVT_WDF_DEVICE_CONTEXT_CLEANUP FdoEvtDeviceContextCleanup;
+-EVT_WDF_DPC  FdoEvtDeviceDpcFunc;
+-EVT_WDF_INTERRUPT_ISR  FdoEvtDeviceIsrFunc;
+-EVT_WDF_INTERRUPT_ENABLE  FdoEvtDeviceInterruptEnable;
+-EVT_WDF_INTERRUPT_DISABLE  FdoEvtDeviceInterruptDisable;
++// --XT-- EVT_WDF_DPC  FdoEvtDeviceDpcFunc;
++// --XT-- EVT_WDF_INTERRUPT_ISR  FdoEvtDeviceIsrFunc;
++// --XT-- EVT_WDF_INTERRUPT_ENABLE  FdoEvtDeviceInterruptEnable;
++// --XT-- EVT_WDF_INTERRUPT_DISABLE  FdoEvtDeviceInterruptDisable;
+ EVT_WDF_TIMER  FdoEvtTimerFunc;
+ EVT_WDF_DEVICE_FILE_CREATE  FdoEvtDeviceFileCreate;
+ EVT_WDF_FILE_CLOSE  FdoEvtFileClose;
+ 
++// --XT-- New callback type for the DPC
++EVTCHN_HANDLER_CB FdoEvtDeviceDpcFunc;
++
+ 
+ PCHAR
+ DbgDevicePowerString(
+@@ -225,6 +228,7 @@
+     KeInitializeEvent(&fdoContext->resetCompleteEvent, SynchronizationEvent, FALSE);
+     //
+     // allocate the xen interface for this context;
++    // --XT-- this is the new XT version of this routine.
+     //
+     fdoContext->Xen = AllocateXenInterface(fdoContext);
+     if (!fdoContext->Xen)
+@@ -307,75 +311,24 @@
+         return status;
+     }
+     //
+-    // Create the interrupt and dpc interface here.
+-    // The framework will connect device interrupt resources
+-    // automatically.
+-    //
+-    WDF_INTERRUPT_CONFIG  interruptConfig;
+-
+-    WDF_INTERRUPT_CONFIG_INIT(
+-        &interruptConfig,
+-        FdoEvtDeviceIsrFunc,
+-        NULL);
+-    //
+-    // Are these really required? They don't do anything, the docs are ambiguous.
+-    //
+-    interruptConfig.EvtInterruptEnable  = FdoEvtDeviceInterruptEnable;
+-    interruptConfig.EvtInterruptDisable = FdoEvtDeviceInterruptDisable;
+-    //
+-    // define the interrupt context (which is really just
+-    // a container for a pointer to the PUSB_FDO_CONTEXT
++    // --XT-- Do the Xen interface initialization early during
++    // device creation. The backend will be connected later where
++    // the original Xen initialization code was called in
++    // FdoEvtDeviceD0EntryPostInterruptsEnabled.
+     //
+-    WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(
+-        &attributes,
+-        USB_FDO_INTERRUPT_CONTEXT);
+-
+-    status = WdfInterruptCreate(
+-        device,
+-        &interruptConfig,
+-        &attributes,
+-        &fdoContext->WdfInterrupt);
+-
+-    if (!NT_SUCCESS(status)) 
++    status = XenDeviceInitialize(fdoContext->Xen, FdoEvtDeviceDpcFunc);
++    if (!NT_SUCCESS(status))
+     {
+-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+-        __FUNCTION__": WdfInterruptCreate error %x\n",
+-        status);
+         return status;
+     }
+     //
+-    // initialize the interrupt context
++    // --XT-- All of the WDF ISR and DPC setup code was removed
++    // here. The DPC is now setup through the Xen interface in the
++    // previous call. Note the event channel is setup but not active
++    // until the backend is connected.
+     //
+-    PUSB_FDO_INTERRUPT_CONTEXT interruptContext = DeviceGetInterruptContext(fdoContext->WdfInterrupt);
+-    RtlZeroMemory(interruptContext, sizeof(USB_FDO_INTERRUPT_CONTEXT));
+-    interruptContext->FdoContext = fdoContext;
+ 
+     //
+-    // Don't use the DpcForIsr because it can't be cancelled.
+-    //
+-    WDF_DPC_CONFIG dpcConfig;
+-
+-    WDF_DPC_CONFIG_INIT(
+-        &dpcConfig,
+-        FdoEvtDeviceDpcFunc);
+-
+-    dpcConfig.AutomaticSerialization = FALSE;
+-    WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
+-    attributes.ParentObject = fdoContext->WdfDevice;
+-
+-    status = WdfDpcCreate(
+-        &dpcConfig,
+-        &attributes,
+-        &fdoContext->WdfDpc);
+-
+-    if (!NT_SUCCESS(status)) 
+-    {
+-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+-            __FUNCTION__": WdfDpcCreate error %x\n",
+-            status);
+-        return status;
+-    }
+-    //
+     // Allocate a watchdog timer for our Xen interface.
+     //
+     WDF_TIMER_CONFIG  timerConfig;
+@@ -496,11 +449,11 @@
+  */
+ NTSTATUS
+ FdoEvtDevicePrepareHardware (
+-    _In_ WDFDEVICE      Device,
++    _In_ WDFDEVICE,
+     WDFCMRESLIST,
+-    _In_ WDFCMRESLIST   ResourcesTranslated)
++    _In_ WDFCMRESLIST)
+ {    
+-    PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(Device);
++    // --XT-- PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(Device);
+ 
+     TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+         __FUNCTION__"\n");
+@@ -508,15 +461,7 @@
+     // map the hardware resources
+     //
+     
+-    if (!MapXenDeviceRegisters(fdoContext->Xen, ResourcesTranslated) ||
+-        gFakeNxprep)
+-    {
+-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+-            __FUNCTION__": device %p failed to map xen resources. Assume Nxprep!\n",
+-            fdoContext->WdfDevice);
+-        fdoContext->NxprepBoot = TRUE;
+-        gDebugLevel = TRACE_LEVEL_VERBOSE; // until this works, then undo.
+-    }
++    // --XT-- Removed call to MapXenDeviceRegisters and args to this call.
+ 
+     return STATUS_SUCCESS;
+ }
+@@ -538,7 +483,11 @@
+ 
+     TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+         __FUNCTION__"\n");
+-    DisconnectBackendDevice(fdoContext->Xen);
++    //
++    // --XT-- Switch to using the new Xen interface routine
++    // to discconnect the backend.
++    //
++    XenDeviceDisconnectBackend(fdoContext->Xen);
+     FreeUsbConfigData(fdoContext);
+     return STATUS_SUCCESS;
+ }
+@@ -596,12 +545,16 @@
+     // set up the XEN connection.
+     //
+     if (!fdoContext->NxprepBoot)
+-    {
+-        status = ConnectBackendDevice(fdoContext->Xen);
++    {   
++        //
++        // --XT-- Switch to using the new Xen interface routine
++        // to connect the backend and start everything up.
++        //
++        status = XenDeviceConnectBackend(fdoContext->Xen);
+         if (!NT_SUCCESS(status))
+         {
+             TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+-                __FUNCTION__": Device %p ConnectBackendDevice error %x\n",
++                __FUNCTION__": Device %p XenDeviceConnectBackend error %x\n",
+                 fdoContext->WdfDevice,
+                 status);
+             return STATUS_SUCCESS;
+@@ -725,7 +678,11 @@
+         if (!fdoContext->CtlrDisconnected)
+         {            
+             ReleaseFdoLock(fdoContext);
+-            WdfDpcCancel(fdoContext->WdfDpc, TRUE);
++            // --XT-- WdfDpcCancel(fdoContext->WdfDpc, TRUE);
++            //
++            // --XT-- Should disable the DPC here
++            //
++            XenDisconnectDPC(fdoContext->Xen);
+             RemoveAllChildDevices(fdoContext->WdfDevice);
+             AcquireFdoLock(fdoContext);
+         }
+@@ -747,7 +704,12 @@
+     
+     ReleaseFdoLock(fdoContext);
+     WdfTimerStop(fdoContext->WatchdogTimer, TRUE);
+-    WdfDpcCancel(fdoContext->WdfDpc, TRUE);       
++    // --XT-- WdfDpcCancel(fdoContext->WdfDpc, TRUE);
++    //
++    // --XT-- This also looks like a reasonable place to turn off the event channel.
++    //
++    XenDisconnectDPC(fdoContext->Xen);
++
+     AcquireFdoLock(fdoContext);
+ 
+     FdoUnplugDevice(fdoContext);
+@@ -828,7 +790,7 @@
+     IN  WDF_POWER_DEVICE_STATE TargetState)
+ {  
+     PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(Device);
+-    PUSB_FDO_INTERRUPT_CONTEXT interruptContext = DeviceGetInterruptContext(fdoContext->WdfInterrupt);
++    // --XT-- PUSB_FDO_INTERRUPT_CONTEXT interruptContext = DeviceGetInterruptContext(fdoContext->WdfInterrupt);
+ 
+     TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+         __FUNCTION__": %s Device %p TargetState %s\n",
+@@ -850,19 +812,19 @@
+         fdoContext->totalIndirectErrors,
+         fdoContext->largestIndirectTransfer);
+ 
++    //
++    // --XT-- Removed tracing of 2 interrupt related values.
++    //
+     TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+         __FUNCTION__": %s\n"
+         "    DPC overlap %I64d DPC requeue %I64d\n"
+-        "    DPC max passes %d DPC max processed %d DPC drain queue requests %d\n"
+-        "    ISR entered %I64d ISR active %I64d \n",
++        "    DPC max passes %d DPC max processed %d DPC drain queue requests %d\n",
+         fdoContext->FrontEndPath, 
+         fdoContext->totalDpcOverLapCount,
+         fdoContext->totalDpcReQueueCount,
+         fdoContext->maxDpcPasses,
+         fdoContext->maxRequestsProcessed,
+-        fdoContext->maxRequeuedRequestsProcessed,
+-        interruptContext->IsrEntered,
+-        interruptContext->IsrActive);
++        fdoContext->maxRequeuedRequestsProcessed);
+ 
+     // @todo anything else that needs undoing?
+ 
+@@ -915,36 +877,12 @@
+ //
+ 
+ //
+-/// Required but does nothing.
++// --XT-- Removed FdoEvtDeviceInterruptEnable
+ //
+-NTSTATUS
+-FdoEvtDeviceInterruptEnable (
+-    IN WDFINTERRUPT  Interrupt,
+-    IN WDFDEVICE  AssociatedDevice)
+-{
+-    UNREFERENCED_PARAMETER(Interrupt);
+-    PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(AssociatedDevice);
+-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+-            __FUNCTION__": Device %p\n",
+-            fdoContext->WdfDevice);
+-    return STATUS_SUCCESS;
+-}
+ 
+ //
+-/// Required but does nothing.
++// --XT-- Removed FdoEvtDeviceInterruptDisable
+ //
+-NTSTATUS
+-FdoEvtDeviceInterruptDisable (
+-    IN WDFINTERRUPT  Interrupt,
+-    IN WDFDEVICE  AssociatedDevice)
+-{
+-    UNREFERENCED_PARAMETER(Interrupt);
+-    PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(AssociatedDevice);
+-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+-            __FUNCTION__": Device %p\n",
+-            fdoContext->WdfDevice);
+-    return STATUS_SUCCESS;
+-}
+ 
+ /**
+  * @brief DPC callback.
+@@ -959,9 +897,10 @@
+  */
+ VOID
+ FdoEvtDeviceDpcFunc(
+-    IN WDFDPC  Dpc)
++    IN VOID *Context)
+ {
+-    PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(WdfDpcGetParentObject(Dpc));
++    // --XT-- FDO context passed directly now.
++    PUSB_FDO_CONTEXT fdoContext = (PUSB_FDO_CONTEXT)Context;
+     //
+     // this stuff needs to be done at DPC level in order to complete irps.
+     //
+@@ -992,7 +931,11 @@
+             //
+             // reschedule the dpc to prevent starvation.
+             //
+-            WdfDpcEnqueue(fdoContext->WdfDpc);
++            // --XT-- WdfDpcEnqueue(fdoContext->WdfDpc);
++            //
++            // --XT-- Schedule through the Xen interface now.
++            //
++            XenScheduleDPC(fdoContext->Xen);
+             TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
+                 __FUNCTION__": enqueue dpc at %d passes\n",
+                 passes);
+@@ -1054,45 +997,9 @@
+         passes);
+ }
+ 
+-/**
+- * @brief Interrupt Callback.
+- *
+- */
+-BOOLEAN
+-FdoEvtDeviceIsrFunc (
+-    IN WDFINTERRUPT  Interrupt,
+-    IN ULONG  MessageID)
+-{
+-    UNREFERENCED_PARAMETER(MessageID);
+-    PUSB_FDO_INTERRUPT_CONTEXT Context = DeviceGetInterruptContext(Interrupt);
+-
+-    Context->IsrEntered++;
+-    BOOLEAN forMe  = FALSE;
+-    if (Context->FdoContext->XenConfigured)
+-    {
+-        forMe = XenIsr(Context->FdoContext->Xen);
+-        if (forMe)
+-        {
+-            Context->IsrActive++;
+-
+-            WdfDpcEnqueue(Context->FdoContext->WdfDpc);
+-        }
+-
+-        if ((Context->IsrEntered % 5000 == 0))
+-        {
+-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_ISR,
+-                __FUNCTION__" entered %I64x for me %I64x\n",
+-                Context->IsrEntered,
+-                Context->IsrActive++);
+-        }
+-    }
+-    //
+-    // return forMe;
+-    // @todo really this is a hack all the xen device share one vector.
+-    // the consequences can be hideous.
+-    //
+-    return FALSE;
+-}
++//
++// --XT-- Removed FdoEvtDeviceIsrFunc
++//
+ 
+ 
+ /**
+@@ -1138,7 +1045,10 @@
+     //
+     if (!fdoContext->DeviceUnplugged)
+     {
+-        FdoEvtDeviceDpcFunc(fdoContext->WdfDpc);
++        //
++        // --XT-- Now passing the FDO context directly.
++        //
++        FdoEvtDeviceDpcFunc(fdoContext);
+     }
+ }
+ 

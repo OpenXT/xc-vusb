@@ -1,0 +1,106 @@
+;
+; Copyright (c) 2014 Citrix Systems, Inc.
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+; 
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+; 
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+;
+[Version]
+Signature="$WINDOWS NT$"
+Class=USB
+ClassGuid={36FC9E60-C465-11CF-8056-444553540000}
+Provider=%ManufacturerName%
+CatalogFile=xenvusb.cat
+DriverVer=04/10/2014,5.1.2.65534
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+xenvusb.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%xenvusb.DeviceDesc%=xenvusb_Device,  XEN\VUSB
+%xenvusb.HubDesc%=xenvusb_NullDevice,  XEN\ROOT_HUB
+
+[xenvusb_Device.NT]
+CopyFiles=Drivers_Dir
+
+[xenvusb_NullDevice.NT]
+
+[Drivers_Dir]
+xenvusb.sys
+
+;-------------- Service installation
+[xenvusb_Device.NT.Services]
+AddService = xenvusb,%SPSVCINST_ASSOCSERVICE%, xenvusb_Service_Inst
+
+; -------------- xenvusb driver install sections
+[xenvusb_Service_Inst]
+DisplayName    = %xenvusb.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\xenvusb.sys
+LoadOrderGroup = Extended Base
+
+[xenvusb_NullDevice.NT.Services]
+AddService = ,2    ; no value for the service name
+
+;
+;--- xenvusb_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+xenvusb_Device_CoInstaller_CopyFiles = 11
+
+[xenvusb_Device.NT.CoInstallers]
+AddReg=xenvusb_Device_CoInstaller_AddReg
+CopyFiles=xenvusb_Device_CoInstaller_CopyFiles
+
+[xenvusb_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01009.dll,WdfCoInstaller"
+
+[xenvusb_Device_CoInstaller_CopyFiles]
+WdfCoInstaller01009.dll
+
+[SourceDisksFiles]
+WdfCoInstaller01009.dll=1 ; make sure the number matches with SourceDisksNames
+
+[xenvusb_Device.NT.Wdf]
+KmdfService =  xenvusb, xenvusb_wdfsect
+
+[xenvusb_wdfsect]
+KmdfLibraryVersion = 1.9
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="OpenXT"
+DiskName = "OpenXT PV USB Driver Install Disk"
+xenvusb.DeviceDesc = "OpenXT USB Host Controller"
+xenvusb.HubDesc = "OpenXT USB Root Hub"
+xenvusb.SVCDESC = "OpenXT USB Driver"
