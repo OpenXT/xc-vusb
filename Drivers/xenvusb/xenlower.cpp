@@ -1,5 +1,5 @@
 //
-// Copyright (c) Citrix Systems, Inc., All rights reserved.
+// Copyright (c) Citrix Systems, Inc.
 //
 /// @file xenlower.cpp lowlevel bus access implementation.
 /// This module is the lower edge interface to the underlying

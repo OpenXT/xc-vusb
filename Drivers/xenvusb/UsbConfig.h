@@ -1,5 +1,5 @@
 //
-// Copyright (c) Citrix Systems, Inc., All rights reserved.
+// Copyright (c) Citrix Systems, Inc.
 //
 /// @file UsbConfig.h USB URB and Scratchpad request and response processing definitions.
 //

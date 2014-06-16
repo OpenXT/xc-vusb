@@ -1,5 +1,5 @@
 //
-// Copyright (c) Citrix Systems, Inc., All rights reserved.
+// Copyright (c) Citrix Systems, Inc.
 //
 /// @file xenlower.h lowlevel bus access interface definitions.
 //

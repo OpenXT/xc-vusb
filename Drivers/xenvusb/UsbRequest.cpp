@@ -1,5 +1,5 @@
 //
-// Copyright (c) Citrix Systems, Inc., All rights reserved.
+// Copyright (c) Citrix Systems, Inc.
 //
 /// @file UsbRequest.cpp USB high level request processing.
 //

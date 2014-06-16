@@ -1,5 +1,5 @@
 //
-// Copyright (c) Citrix Systems, Inc., All rights reserved.
+// Copyright (c) Citrix Systems, Inc.
 //
 /// @file xenif.cpp xen ringbuffer and bus access implementation.
 /// This module encapsulates and abstracts driver access to the xen

@@ -1,5 +1,5 @@
 //
-// Copyright (c) Citrix Systems, Inc., All rights reserved.
+// Copyright (c) Citrix Systems, Inc.
 //
 /// @file RootHubPdo.cpp Emulates a Root Hub Device.
 /// This is a "raw pdo" device that emulates a root hub in the standard 
