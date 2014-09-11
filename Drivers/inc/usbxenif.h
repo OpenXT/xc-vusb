@@ -174,6 +174,7 @@ struct iso_packet_info {
     uint32_t            offset; // set by frontend - offset into buffer of this packet
     uint16_t            length; // <= 1024 - set to 0 by frontend. Set to valid length by backend for IN packets
     int16_t             status; // set to 0 by frontend. Set to USBIF_USB_??? by backend.
+    uint32_t            pad;
 };
 
 DEFINE_RING_TYPES(usbif, struct usbif_request, struct usbif_response);
