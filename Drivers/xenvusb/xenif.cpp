@@ -646,7 +646,7 @@ PutShadowOnFreelist(
     ASSERT(shadow->InUse == TRUE);
     if (!shadow->InUse)
     {
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
             __FUNCTION__ ": shadow %d not in use!\n",
             shadow->req.id);
         return;
@@ -683,7 +683,7 @@ PutShadowOnFreelist(
             {
                 if (!PutGrantOnFreelist(Xen, indirectPage[index].gref[index2]))
                 {
-                    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
                         __FUNCTION__": leaked grant ref %p for indirect data segment\n",
                         indirectPage[index].gref[index2]);
                 }
@@ -696,7 +696,7 @@ PutShadowOnFreelist(
     {
         if (!PutGrantOnFreelist(Xen, shadow->req.gref[index]))
         {
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
                 __FUNCTION__": leaked grant ref %p for data segment\n",
                 shadow->req.gref[index]);
         }
@@ -708,8 +708,8 @@ PutShadowOnFreelist(
     ASSERT(Xen->ShadowFree < Xen->ShadowArrayEntries);
     if (Xen->ShadowFree >= Xen->ShadowArrayEntries)
     {
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
-            __FUNCTION__": ShadowFree %d ShadowArrayEntries %d!\n",
+        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+            __FUNCTION__": ShadowFree %d >= ShadowArrayEntries %d!\n",
             Xen->ShadowFree,
             Xen->ShadowArrayEntries);
         return;
@@ -726,7 +726,7 @@ CompleteRequestsFromShadow(
 
     AcquireFdoLock(fdoContext);;
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
         __FUNCTION__": Device %p %d requests on ringbuffer\n",
         fdoContext->WdfDevice,
         OnRingBuffer(fdoContext->Xen));
@@ -796,7 +796,7 @@ CompleteRequestsFromShadow(
             WdfRequestComplete(Request, STATUS_DEVICE_DOES_NOT_EXIST);
             AcquireFdoLock(fdoContext);;
 
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
                 __FUNCTION__": Device %p completing on hardware Request %p\n",
                 fdoContext->WdfDevice,
                 Request);
@@ -805,7 +805,7 @@ CompleteRequestsFromShadow(
     
     ReleaseFdoLock(fdoContext);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": Device %p removed %d requests from ringbuffer\n",
         fdoContext->WdfDevice,
         RequestsProcessed);
@@ -881,7 +881,7 @@ AllocateGrefs(
 {
     ULONG index;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
             __FUNCTION__ "==> PagesUsed: %d (0x%x)\n", PagesUsed, PagesUsed);
 
     for (index = 0;
@@ -892,7 +892,7 @@ AllocateGrefs(
         grant_ref_t gref = GetGrantFromFreelist(Xen);
         if (gref == INVALID_GRANT_REF)
         {
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
                 __FUNCTION__ "GetGrantFromFreelist failed\n");
             return FALSE;
         }     
@@ -905,11 +905,11 @@ AllocateGrefs(
             shadow->req.gref[shadow->req.nr_segments]);
 
         shadow->req.nr_segments++;
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
             __FUNCTION__ "Mapped PFN(%d): %d (0x%x)\n", index, pfn, pfn);
     }
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
             __FUNCTION__ "<==\n");
     return TRUE;
 }
@@ -1362,7 +1362,7 @@ PutResetOrCycleUrbOnRing(
                 //
                 // Complete the request.
                 //
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                     __FUNCTION__": Device %p Request %p shadow %p Cleanup request status %x\n",
                     fdoContext->WdfDevice,
                     Request,
@@ -1708,7 +1708,7 @@ PutUrbOnRing(
                 //
                 // Complete the request.
                 //
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                     __FUNCTION__": Device %p Request %p shadow %p Mdl %p mdlAllocated %d Cleanup request status %x\n",
                     fdoContext->WdfDevice,
                     Request,
@@ -2112,7 +2112,7 @@ PutIsoUrbOnRing(
         shadow->allocatedMdl = mdlAllocated ? Mdl : NULL;
 
         RtlCopyMemory(&shadow->req.setup, packet, sizeof(shadow->req.setup));
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                 __FUNCTION__": request: id %I64d type %d endpoint %x length %x offset %x nr_segs %d\n",
             shadow->req.id,
             shadow->req.type,
@@ -2164,7 +2164,7 @@ PutIsoUrbOnRing(
                 //
                 // Complete the request.
                 //
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                     __FUNCTION__": Device %p Request %p shadow %p Mdl %p mdlAllocated %d Cleanup request status %x\n",
                     fdoContext->WdfDevice,
                     Request,
@@ -2215,7 +2215,7 @@ TraceUsbIfRequest(
 {
     WDF_USB_CONTROL_SETUP_PACKET packet;
     RtlCopyMemory(&packet, &request->setup, sizeof(packet));
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         "%s Device %p usbif_request %p\n"
         "  id %x type %x endpoint %x\n"
         "  offset %x length %x nr_segments %x\n"
@@ -2381,7 +2381,7 @@ XenDpc(
                 //
                 // resets always work.
                 //
-                TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
                     __FUNCTION__": %s reset completion\n",
                     fdoContext->FrontEndPath);
                 NtStatus = STATUS_SUCCESS;
@@ -2413,8 +2413,6 @@ XenDpc(
                     response->data,
                     shadow->isoPacketDescriptor);
 
-                ULONG traceLevel = TRACE_LEVEL_INFORMATION;
-
                 if (!NT_SUCCESS(NtStatus))
                 {
                     if (shadow->indirectPageMemory)
@@ -2433,42 +2431,42 @@ XenDpc(
                         if (shadow->req.length > fdoContext->largestIndirectTransfer)
                         {
                             fdoContext->largestIndirectTransfer = shadow->req.length;
-                            traceLevel = TRACE_LEVEL_ERROR;
+                            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+                                        __FUNCTION__": %s request length %d > largest ind xfer\n",
+                                        fdoContext->FrontEndPath, shadow->req.length);
                         }
                     }
                     else if (shadow->req.length > fdoContext->largestDirectTransfer)
                     {
                         fdoContext->largestDirectTransfer = shadow->req.length;
-                        traceLevel = TRACE_LEVEL_ERROR;
+                        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+                                    __FUNCTION__": %s request length %d > largest dir xfer\n",
+                                    fdoContext->FrontEndPath, shadow->req.length);
                     }
                 }
 
-                // --XT-- XXX TODO shorting this logging out if it is not errors or
-                // warnings. As noted, the logging needs work. Maybe at some point
-                // this can be restored for debugging though is is quite noisy.
-                if ((traceLevel == TRACE_LEVEL_ERROR)||(traceLevel == TRACE_LEVEL_WARNING))
-                {
-                    TraceEvents(traceLevel, TRACE_DPC,
-                        __FUNCTION__": %s %s usbif status %x (%s) usbd status %x (%s) ntstatus %x\n"
-                        "request type %x endpoint %x offset %d length %d nr_segments %d flags %x\n"
-                        "nr_packets %d startframe %d indirectPageMemory %p\n",
-                        fdoContext->FrontEndPath,
-                        response->status ? "response error" : "response",
-                        response->status,
-                        usbifStatusString,
-                        usbdStatus,
-                        usbdStatusString,
-                        NtStatus,
-                        shadow->req.type,
-                        shadow->req.endpoint,
-                        shadow->req.offset,
-                        shadow->req.length,
-                        shadow->req.nr_segments,
-                        shadow->req.flags,
-                        shadow->req.nr_packets,
-                        shadow->req.startframe,
-                        shadow->indirectPageMemory);
-                }
+                // --XT-- Originally shorting this logging out but that was a mess. Logged
+                // warnings abovel and make this verbose.
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
+                    __FUNCTION__": %s %s usbif status %x (%s) usbd status %x (%s) ntstatus %x\n"
+                    "request type %x endpoint %x offset %d length %d nr_segments %d flags %x\n"
+                    "nr_packets %d startframe %d indirectPageMemory %p\n",
+                    fdoContext->FrontEndPath,
+                    response->status ? "response error" : "response",
+                    response->status,
+                    usbifStatusString,
+                    usbdStatus,
+                    usbdStatusString,
+                    NtStatus,
+                    shadow->req.type,
+                    shadow->req.endpoint,
+                    shadow->req.offset,
+                    shadow->req.length,
+                    shadow->req.nr_segments,
+                    shadow->req.flags,
+                    shadow->req.nr_packets,
+                    shadow->req.startframe,
+                    shadow->indirectPageMemory);
             }
         }
         else
@@ -2637,7 +2635,7 @@ XenPostProcessIsoResponse(
 
         // transfer the packet descriptors back?
         TraceEvents(
-            Urb->UrbIsochronousTransfer.ErrorCount ? TRACE_LEVEL_INFORMATION : TRACE_LEVEL_VERBOSE, 
+            TRACE_LEVEL_VERBOSE, 
             TRACE_DPC,
             __FUNCTION__": packet completion: StartFrame %d  errorCount %d numberOfPackets %d totalBytes %d\n",
             startFrame,

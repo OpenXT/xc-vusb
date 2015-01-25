@@ -56,12 +56,7 @@ static inline void __XenTrace(XEN_TRACE_LEVEL level, ULONG flags, PCSTR fmt, ...
 
     UNREFERENCED_PARAMETER(flags);
 
-    // --XT-- XXX TODO This is a temporary fix to deal with the really
-    // loud tracing. See the logging comment in xenif.cpp for more info.
-    if (level < XenTraceLevelWarning)
-    {
-        return;
-    }
+    // --XT-- Restored information level tracking - keep an eye on it.
 
 	va_start(args, fmt);
 	___XenTrace(level, XENTARGET,  sizeof(XENTARGET)-1, fmt, args);

@@ -747,7 +747,7 @@ FdoUnplugDevice(
 {
     if (!fdoContext->DeviceUnplugged)
     {
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s\n",
             fdoContext->FrontEndPath);
         fdoContext->DeviceUnplugged = TRUE;        
@@ -827,14 +827,17 @@ CleanupDisconnectedDevice(
                         fdoContext->IdleRequest);
                     completeRequest = FALSE;
                 }
-                //
-                // note but ignore. 
-                //
-                TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
-                    __FUNCTION__": Device %p Request %p WdfRequestUnmarkCancelable error %x\n",
-                    fdoContext->WdfDevice,
-                    fdoContext->IdleRequest,
-                    Status);
+                else
+                {
+                    //
+                    // note but ignore. 
+                    //
+                    TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+                        __FUNCTION__": Device %p Request %p WdfRequestUnmarkCancelable error %x\n",
+                        fdoContext->WdfDevice,
+                        fdoContext->IdleRequest,
+                        Status);
+                }
             }
         }
         WDFREQUEST idleRequest = fdoContext->IdleRequest;
@@ -871,7 +874,7 @@ FdoEvtDeviceD0Exit(
     IN  WDF_POWER_DEVICE_STATE)
 {  
     PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(device);
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s Device %p\n",
         fdoContext->FrontEndPath, 
         fdoContext->WdfDevice);
@@ -879,7 +882,7 @@ FdoEvtDeviceD0Exit(
     WdfTimerStop(fdoContext->WatchdogTimer, TRUE);
     XenDeconfigure(fdoContext);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s\n"
         "    Direct Transfers: %I64d errors: %I64d largest: %d\n"
         "    Indirect Transfers: %I64d errors: %I64d largest: %d\n",
@@ -895,7 +898,7 @@ FdoEvtDeviceD0Exit(
     //
     // --XT-- Removed tracing of 2 interrupt related values.
     //
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s\n"
         "    DPC overlap %I64d DPC requeue %I64d\n"
         "    DPC max passes %d DPC max processed %d DPC drain queue requests %d\n",
@@ -922,7 +925,7 @@ VOID FdoEvtDeviceSurpriseRemoval(
 {
     PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(Device);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s Device %p\n",
         fdoContext->FrontEndPath, 
         fdoContext->WdfDevice);
@@ -941,7 +944,7 @@ NTSTATUS FdoEvtChildListCreateDevice(
     _In_  PWDFDEVICE_INIT ChildInit)
 {
     PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(WdfChildListGetDevice(ChildList));
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s\n",
         fdoContext->FrontEndPath);
 
@@ -1069,8 +1072,8 @@ FdoEvtDeviceDpcFunc(
 
     ReleaseFdoLock(fdoContext);
 
-    ULONG level = responseCount ? TRACE_LEVEL_INFORMATION : TRACE_LEVEL_VERBOSE;
-    TraceEvents(level, TRACE_DPC,
+    // --XT-- this trace was way too noisy, made it verbose.
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
         __FUNCTION__": exit responses processed %d passes %d\n",
         responseCount,
         passes);
@@ -1149,7 +1152,7 @@ FdoEvtDeviceFileCreate (
     PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(Device);
     UNREFERENCED_PARAMETER(FileObject);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s Device %p\n",
         fdoContext->FrontEndPath,
         fdoContext->WdfDevice);
@@ -1265,7 +1268,7 @@ NewWorkItem(
         //
         // ok - allocate a new one.
         //
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
             __FUNCTION__": Device %p FreeWorkItems is empty, init count %d\n",
             fdoContext->WdfDevice,
             INIT_WORK_ITEM_COUNT);
