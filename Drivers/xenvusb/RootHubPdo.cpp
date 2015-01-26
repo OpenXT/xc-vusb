@@ -506,7 +506,7 @@ CreateRootHubPdoWithDeviceInit(
     else
     {
         // for the log:
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s WDFDEVICE %p child PDO WDFDEVICE %p\n",
             fdoContext->FrontEndPath,
             fdoContext->WdfDevice,
@@ -528,7 +528,7 @@ RootHubPreProcessPnpIrp(
     NTSTATUS Status = Irp->IoStatus.Status;
     PIO_STACK_LOCATION IoStack = IoGetCurrentIrpStackLocation(Irp);
     PCHAR requeststring = "Unknown";
-    ULONG traceLevel = TRACE_LEVEL_INFORMATION;
+    ULONG traceLevel = TRACE_LEVEL_VERBOSE;
 
     switch (IoStack->MinorFunction)
     {
@@ -612,7 +612,7 @@ RootHubPreProcessPnpIrp(
         requeststring = "IRP_MN_DEVICE_USAGE_NOTIFICATION";
         break;
     case IRP_MN_SURPRISE_REMOVAL:
-        traceLevel = TRACE_LEVEL_WARNING;
+        traceLevel = TRACE_LEVEL_INFORMATION;
         requeststring = "IRP_MN_SURPRISE_REMOVAL";
         break;
     default:
@@ -636,7 +636,7 @@ RootHubPreProcessCreateIrp(
     IN PIRP Irp)
 {
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
         __FUNCTION__"\n");    
     
     IoSkipCurrentIrpStackLocation(Irp);
@@ -657,7 +657,7 @@ HubEvtDeviceD0Entry(
 {
     PUSB_HUB_PDO_CONTEXT hubContext = DeviceGetHubPdoContext(Device);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": Device %p PreviousState %s\n",
         hubContext->WdfDevice,
         DbgDevicePowerString(PreviousState));
@@ -698,7 +698,7 @@ HubEvtDeviceD0Exit(
 { 
     PUSB_HUB_PDO_CONTEXT hubContext = DeviceGetHubPdoContext(Device);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": Device %p TargetState %s\n",
         hubContext->WdfDevice,
         DbgDevicePowerString(TargetState));
@@ -720,7 +720,7 @@ VOID HubEvtDeviceSurpriseRemoval(
 {
     PUSB_HUB_PDO_CONTEXT hubContext = DeviceGetHubPdoContext(Device);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": Device %p unplugged\n",
         hubContext->WdfDevice);
 
@@ -735,6 +735,7 @@ HubEvtDeviceQueryRemove (
 {
     PUSB_HUB_PDO_CONTEXT hubContext = DeviceGetHubPdoContext(Device);  
 
+    // Leave as a warning, devices should be surprise removed with no queries.
     TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
         __FUNCTION__": Device %p\n",
         hubContext->WdfDevice);
@@ -913,7 +914,7 @@ ProcessHubGetNodeInformation(
         Information = sizeof(USB_NODE_INFORMATION);
     }
     
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s completing request with status %x\n",
         fdoContext->FrontEndPath,
         Status);
@@ -1019,7 +1020,7 @@ ProcessHubGetNodeConnectionInformation(
         }
     }
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s length %d needed %d pipes %d requested %d request status %x\n",
         fdoContext->FrontEndPath,
         OutputBufferLength,
@@ -1095,7 +1096,7 @@ ProcessHubGetCapabilities(
         }
     }
     
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s length %d needed %d pipes %d requested %d request status %x\n",
         fdoContext->FrontEndPath,
         OutputBufferLength,
@@ -1148,7 +1149,7 @@ ProcessHubGetDescriptorFromNodeConnection(
         }
     }
         
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s completing request with status %x\n",
         fdoContext->FrontEndPath,
         Status);
@@ -1262,7 +1263,7 @@ ProcessHubCyclePort(
         }
     }
         
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s completing request with status %x\n",
         GetFdoContextFromHubDevice(hubContext->WdfDevice)->FrontEndPath,
         Status);
@@ -1296,7 +1297,7 @@ ProcessHubCyclePort(
          Information = 20;
      }
         
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s completing request with status %x\n",
         GetFdoContextFromHubDevice(hubContext->WdfDevice)->FrontEndPath,
         Status);
@@ -1798,7 +1799,7 @@ HubGetStringDescriptor(
 {
     UNREFERENCED_PARAMETER(packet);    
     UNREFERENCED_PARAMETER(buffer);
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": Device %p Request %p URB %p\n",
         hubContext->WdfDevice,
         Request,
@@ -1871,7 +1872,7 @@ HubGetStatus(
     IN PUCHAR buffer,
     IN PWDF_USB_CONTROL_SETUP_PACKET packet)
 {
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": Device %p Request %p URB %p length %d\n",
         hubContext->WdfDevice,
         Request,
@@ -1952,12 +1953,12 @@ HubGetStatus(
                 if (hubContext->PortFeatureStatus & USB_PORT_STATUS_RESET)
                 {
                     hubContext->PortFeatureStatus &= ~USB_PORT_STATUS_RESET;
-                    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+                    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                         __FUNCTION__": Device %p clearing port feature reset status\n",
                         hubContext->WdfDevice);
                 }
                 ULONG level = hubContext->PortFeatureChange ? TRACE_LEVEL_WARNING : 
-                    TRACE_LEVEL_INFORMATION;
+                    TRACE_LEVEL_VERBOSE;
 
                 TraceEvents(level, TRACE_URB,
                     __FUNCTION__": Device %p Port Status %x Change %x\n",
@@ -2158,7 +2159,7 @@ HubSetFeature(
             break;
         }   
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
             __FUNCTION__": Device %p Feature %s %d PortFeatureStatus %x PortFeatureChange: %x\n",
             hubContext->WdfDevice,
             feature,
@@ -2195,7 +2196,7 @@ HubClearFeature(
     PCHAR feature = DecodeFeature(packet->Packet.wValue.Value);
     BOOLEAN statusChanged = FALSE;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": Device %p Request %p URB %p Feature %s %d wIndex %x\n",
         hubContext->WdfDevice,
         Request,
@@ -2256,7 +2257,7 @@ HubClearFeature(
             break;
         }
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
             __FUNCTION__": Device %p Feature %s %d PortFeatureChange: %x\n",
             hubContext->WdfDevice,
             feature,
@@ -2307,7 +2308,7 @@ HubControlTransferEx(
     WDF_USB_CONTROL_SETUP_PACKET packet;
     RtlCopyMemory(packet.Generic.Bytes, Urb->UrbControlTransferEx.SetupPacket, 8);
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": Device %p Request %p URB %p\n"
         " bmRequest Dir %d Type %d Recipient %d bRequest %x wValue %x wIndex %x\n",
         hubContext->WdfDevice,
@@ -2331,7 +2332,7 @@ HubControlTransferEx(
     if (buffer == NULL)
     {
         // this can be ok.
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
             __FUNCTION__": device %p buffer is NULL\n",
             hubContext->WdfDevice);
     }
@@ -2446,7 +2447,7 @@ HubControlTransferEx(
         }
     }
     
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": device %p bRequest %s (%x) unsupported\n",
         hubContext->WdfDevice,
         transferRequest, 
@@ -2769,7 +2770,7 @@ HubCheckStatusChange(
             hubContext->ReportedStatus = hubContext->PortFeatureChange;
             context->Buffer[0] = 0x02; // port 1.
 
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
                 __FUNCTION__": Device %p Request %p PortFeatureChange %x\n",
                 hubContext->WdfDevice,
                 Request,
@@ -2864,7 +2865,7 @@ HubProcessHubInterruptRequest(
 
     RtlZeroMemory(buffer, Urb->UrbBulkOrInterruptTransfer.TransferBufferLength);
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
             __FUNCTION__": Device %p Pipehandle %p Interrupt pipe %p length %d Queued\n",
             hubContext->WdfDevice,
             Urb->UrbBulkOrInterruptTransfer.PipeHandle,
@@ -2909,7 +2910,7 @@ HubProcessUrb(
 {
     NTSTATUS Status = STATUS_UNSUCCESSFUL;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": Device %p Request %p URB %p Function %x\n",
         hubContext->WdfDevice,
         Request,
@@ -3042,7 +3043,7 @@ HubEvtIoInternalDeviceControl(
                 *rootHubPdo = WdfDeviceWdmGetDeviceObject(hubContext->WdfDevice); // Root HUB PDO 
             }
 
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": IOCTL_INTERNAL_USB_GET_PARENT_HUB_INFO for device %p p1 %p p2 %p p4 %p\n",
                 hubContext->WdfDevice,
                 parameters.Parameters.Others.Arg1,
@@ -3057,7 +3058,7 @@ HubEvtIoInternalDeviceControl(
             PUSB_TOPOLOGY_ADDRESS topology = 
                 (PUSB_TOPOLOGY_ADDRESS) parameters.Parameters.Others.Arg1;            
 
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": IOCTL_INTERNAL_USB_GET_TOPOLOGY_ADDRESS for device %p\n",
                 hubContext->WdfDevice);
 
@@ -3075,7 +3076,7 @@ HubEvtIoInternalDeviceControl(
 
     case IOCTL_INTERNAL_USB_RESET_PORT:
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                     __FUNCTION__": Device %p IOCTL_INTERNAL_USB_RESET_PORT\n",
                     hubContext->WdfDevice);
 
@@ -3137,7 +3138,7 @@ HubEvtIoInternalDeviceControl(
                 }
                 *portStatus = (ULONG) hubContext->PortFeatureStatus;
                 Status = STATUS_SUCCESS;
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                     __FUNCTION__": device %p IOCTL_INTERNAL_USB_GET_PORT_STATUS port 1 status %x\n",
                     hubContext->WdfDevice,
                     *portStatus);
@@ -3163,7 +3164,7 @@ HubEvtIoInternalDeviceControl(
                 (PUSB_DEVICE_HANDLE *) parameters.Parameters.Others.Arg1;
             *pHandle = hubContext;
 
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": IOCTL_INTERNAL_USB_GET_DEVICE_HANDLE for device %p p1 %p p2 %p p4 %p\n",
                 hubContext->WdfDevice,
                 parameters.Parameters.Others.Arg1,
@@ -3189,7 +3190,7 @@ HubEvtIoInternalDeviceControl(
             PVOID * arg2 = (PVOID *) parameters.Parameters.Others.Arg2;
             *arg2 = (PVOID) hubContext->Port; // ???
 
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": IOCTL_INTERNAL_USB_GET_DEVICE_HANDLE_EX for device %p p1 %p p2 %p p4 %p\n",
                 hubContext->WdfDevice,
                 parameters.Parameters.Others.Arg1,
@@ -3204,7 +3205,7 @@ HubEvtIoInternalDeviceControl(
             PHUB_DEVICE_CONFIG_INFO configInfo = 
                 (PHUB_DEVICE_CONFIG_INFO) parameters.Parameters.Others.Arg1;
 
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": IOCTL_INTERNAL_USB_GET_DEVICE_CONFIG_INFO for device %p\n",
                 hubContext->WdfDevice);
             configInfo->Version = 1;
@@ -3295,7 +3296,7 @@ HubEvtIoStop(
     _In_ ULONG ActionFlags
 )
 {
-    TraceEvents(TRACE_LEVEL_INFORMATION, 
+    TraceEvents(TRACE_LEVEL_VERBOSE, 
                 TRACE_QUEUE, 
                 __FUNCTION__": Queue 0x%p, Request 0x%p ActionFlags %d", 
                 Queue, Request, ActionFlags);
@@ -3318,7 +3319,7 @@ HubStatusChangeEvtIoStop(
     _In_ ULONG ActionFlags
 )
 {
-    TraceEvents(TRACE_LEVEL_INFORMATION, 
+    TraceEvents(TRACE_LEVEL_VERBOSE, 
                 TRACE_QUEUE, 
                 __FUNCTION__": Queue 0x%p, Request 0x%p ActionFlags %d", 
                 Queue, Request, ActionFlags);

@@ -124,14 +124,14 @@ DriverEntry(
     CHAR * buildType = "Release";
 #endif
 
-    TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
-        "Xenclient Enterprise Virtual USB Controller Version %s.\n",
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER,
+        "OpenXT Virtual USB Controller Version %s.\n",
         VER_PRODUCTVERSION_STR);
-    TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER,
         "%s build created on %s at %s\n",
         buildType,
         __DATE__, __TIME__);
-    TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER,
         "DebugLevel %x DebugFlag %x\n", 
         gDebugLevel, gDebugFlag);
 
@@ -179,7 +179,7 @@ EvtDriverContextCleanup(
 {
     UNREFERENCED_PARAMETER(DriverObject);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DRIVER, __FUNCTION__": Driver unload\n");
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, __FUNCTION__": Driver unload\n");
 }
 
 /*

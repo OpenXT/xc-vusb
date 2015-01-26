@@ -232,7 +232,7 @@ ProcessRootHubNameRequest(
 
     WdfRequestCompleteWithInformation(Request, Status, Information);
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_QUEUE,
         __FUNCTION__": request completed with status %x size %d size needed %d output buffer length %d\n",
         Status,
         Information,
@@ -313,7 +313,7 @@ ProcessControllerNameRequest(
         Information = length;
     }
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_QUEUE,
         __FUNCTION__": request completed with status %x size %d size needed %d output buffer length %d\n",
         Status,
         Information,
@@ -389,7 +389,7 @@ ProcessDriverKeyNameRequest(
     // C6102 Using lengthNeeded from failed function call at line ... 
     // claims that lengthNeeded is uninitialized. It clearly is initialized.
    #pragma warning(suppress: 6102) 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_QUEUE,
         __FUNCTION__": request completed with status %x size %d size needed %d output buffer length %d\n",
         Status,
         Information,
@@ -406,7 +406,7 @@ ProcessCyclePort(
     IN WDFREQUEST Request,
     IN size_t OutputBufferLength)
 {
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
         __FUNCTION__": %s for Device %p\n", 
         fdoContext->FrontEndPath,
         fdoContext->WdfDevice);
@@ -660,7 +660,7 @@ ProcessUsbPowerStateMap(
         Information = usbPower->Header.ActualBufferLength;
     }
     
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_QUEUE,
         __FUNCTION__": request completed with status %x size %d\n",
         Status,
         Information); 
@@ -708,7 +708,7 @@ ProcessUsbControllerInfo0(
         Information = usbController->Header.ActualBufferLength;
     }
     
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_QUEUE,
         __FUNCTION__": request completed with status %x size %d\n",
         Status,
         Information); 
@@ -835,7 +835,7 @@ ProcessUsbUserRequest(
     
     if (Request)
     {
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_QUEUE,
             __FUNCTION__": %s request %s (%x) completed with status %x size %d \n",
             fdoContext->FrontEndPath,
             userRequestString,
@@ -1350,7 +1350,7 @@ PassiveDrain(
 {
     PUSB_FDO_WORK_ITEM_CONTEXT  context = WorkItemGetContext(WorkItem);
     
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__":Device %p\n",
         context->FdoContext->WdfDevice);
     //
@@ -1425,7 +1425,7 @@ DrainRequestQueue(
                     if (!FromPassiveLevel &&
                         Urb->UrbHeader.Function == URB_FUNCTION_SELECT_INTERFACE)
                     {
-                        TraceEvents(TRACE_LEVEL_WARNING, TRACE_QUEUE,
+                        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_QUEUE,
                             __FUNCTION__ ": Device %p Request %p URB_FUNCTION_SELECT_INTERFACE processing from DPC\n",
                             fdoContext->WdfDevice,
                             Request);

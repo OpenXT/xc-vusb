@@ -118,6 +118,20 @@ PCHAR UrbFunctionToString(
 // Implementation.
 //
 
+static VOID
+TraceScratchStatus(IN PUSB_FDO_CONTEXT fdoContext,
+                   IN CONST CHAR *function)
+{
+    // --XT-- The stalled status does not seem like an error, downgrading
+    // to a warning.
+    ULONG level = (fdoContext->ScratchPad.Status == USBD_STATUS_STALL_PID) ?
+            TRACE_LEVEL_WARNING : TRACE_LEVEL_ERROR;
+
+    TraceEvents(level, TRACE_DEVICE, "%s: %s usb status %x returned\n",
+            function, fdoContext->FrontEndPath,
+            fdoContext->ScratchPad.Status);
+}
+
 NTSTATUS
 GetUsbConfigData(
     IN PUSB_FDO_CONTEXT fdoContext)
@@ -342,10 +356,7 @@ ProcessGetDescriptorFromNode(
     }
     else if (fdoContext->ScratchPad.Status != 0) // XXX what is the correct constant?
     {
-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
-            __FUNCTION__": %s usb status %x returned\n",
-            fdoContext->FrontEndPath,
-            fdoContext->ScratchPad.Status);
+        TraceScratchStatus(fdoContext, __FUNCTION__);
         status = STATUS_UNSUCCESSFUL;
     }
     else
@@ -382,7 +393,7 @@ GetDescriptor(
     packet->Packet.wIndex.Value = Value;
     packet->Packet.wLength = Length;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
             __FUNCTION__": %s (%x) Recipient %x Value %x Index %x Length %x\n",
         DescriptorTypeToString(DescType),
         DescType,
@@ -423,10 +434,7 @@ GetDescriptor(
     }
     else if (fdoContext->ScratchPad.Status != 0) // XXX what is the correct constant?
     {
-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
-            __FUNCTION__": %s usb status %x returned\n",
-            fdoContext->FrontEndPath,
-            fdoContext->ScratchPad.Status);
+        TraceScratchStatus(fdoContext, __FUNCTION__);
         status = STATUS_UNSUCCESSFUL;
     }
     return status;
@@ -467,7 +475,7 @@ GetDeviceDescriptor(
     {
         RtlCopyMemory(&fdoContext->DeviceDescriptor, fdoContext->ScratchPad.Buffer, sizeof(USB_DEVICE_DESCRIPTOR));
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s Vendor %4.4x Product %4.4x\n",
             fdoContext->FrontEndPath,
             fdoContext->DeviceDescriptor.idVendor,
@@ -654,14 +662,11 @@ ResetDevice(
     {
         if (fdoContext->ScratchPad.Status != 0)
         {
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
-                __FUNCTION__": %s scratch Status %x\n",
-                fdoContext->FrontEndPath,
-                fdoContext->ScratchPad.Status);
+            TraceScratchStatus(fdoContext, __FUNCTION__);
             status = STATUS_UNSUCCESSFUL;
         }
     }
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s returns status %x\n",
         fdoContext->FrontEndPath,
         status);
@@ -899,7 +904,7 @@ ParseConfig(
                 // Add a pointer to this interface/alternate
                 //
                 configInfo->m_interfaceDescriptors[numInterfaces] = currentInterface;
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                     __FUNCTION__ ": Config %d Found interface at %p\n",
                     configValue,
                     currentInterface);
@@ -954,7 +959,7 @@ ParseConfig(
             {
                 if (!isHidDevice)
                 {
-                    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                         __FUNCTION__ ": Config %d Hid descriptor found for non-hid device (ignoring it)\n",
                         configValue);
                 }
@@ -962,7 +967,7 @@ ParseConfig(
                 {
                     isHidDescriptorBeforeEndpoint = TRUE;
                 }
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                     __FUNCTION__ ": Config %d Found HID descriptor HID device was %s compliant\n",
                     configValue,
                     isHidDescriptorBeforeEndpoint ? "D4" : "D3");
@@ -1010,7 +1015,7 @@ ParseConfig(
                     FALSE);
 
 
-                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                     __FUNCTION__ ": Config %d Found %s endpoint %x at %p for interface %p (%d %d) Class %x SubClass %x Protocol %x IntIn %d\n",
                     configValue,
                     AttributesToEndpointTypeString(ea->bmAttributes),
@@ -1039,7 +1044,7 @@ ParseConfig(
                     if (numHidEndpointsFound == 0 &&
                         !isHidDescriptorBeforeEndpoint)
                     {
-                        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+                        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                             __FUNCTION__ ": Config %d D3 compliant HID device\n",
                             configValue);
                     }
@@ -1470,7 +1475,7 @@ GetOsDescriptorString(
     {
         if (!fdoContext->FetchOsDescriptor)
         {
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
                 __FUNCTION__": %s this device does not support os descriptors\n",
                 fdoContext->FrontEndPath);
             doSet = FALSE;
@@ -1528,7 +1533,7 @@ GetOsDescriptorString(
                 fdoContext->OsDescriptorString->osDescriptor.MicrosoftString[6]);
             break;
         }
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s OS Descriptor String found for this device\n",
             fdoContext->FrontEndPath);        
         //
@@ -1572,10 +1577,7 @@ GetOsDescriptorString(
 
         if (fdoContext->ScratchPad.Status != 0) // XXX what is the correct constant?
         {
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
-                __FUNCTION__": %s usb status %x returned\n",
-                fdoContext->FrontEndPath,
-                fdoContext->ScratchPad.Status);
+            TraceScratchStatus(fdoContext, __FUNCTION__);
             Status = STATUS_UNSUCCESSFUL;
             break;
         }
@@ -1666,10 +1668,7 @@ GetOsDescriptorString(
 
         if (fdoContext->ScratchPad.Status != 0) // XXX what is the correct constant?
         {
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
-                __FUNCTION__": %s usb status %x returned (2)\n",
-                fdoContext->FrontEndPath,
-                fdoContext->ScratchPad.Status);
+            TraceScratchStatus(fdoContext, __FUNCTION__);
             Status = STATUS_UNSUCCESSFUL;
             break;
         }
@@ -1715,7 +1714,7 @@ GetOsDescriptorString(
         }
         RtlCopyMemory(fdoContext->CompatIds, fdoContext->ScratchPad.Buffer, length);
                 // yay! That was fun!
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s got compat IDs length %d count %d %s %s\n",
             fdoContext->FrontEndPath,
             fdoContext->CompatIds->header.dwLength,
@@ -1747,7 +1746,7 @@ GetOsDescriptorString(
         // 
         if (doReset)
         {
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
                 __FUNCTION__": %s reset device after os compat failure\n",
                 fdoContext->FrontEndPath);
 
@@ -1771,7 +1770,7 @@ GetString(
         (PUSB_STRING) ExAllocatePoolWithTag(NonPagedPool, sizeof(USB_STRING), XVU8);
     if (!uString)
     {
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
             __FUNCTION__": %s allocation failed\n",
             fdoContext->FrontEndPath);
         return NULL;
@@ -1797,7 +1796,7 @@ GetString(
 
         if (!NT_SUCCESS(Status))
         {
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
                 __FUNCTION__": GetDescriptor length probe failed %x\n",
                 Status);
             ExFreePool(uString);
@@ -1822,7 +1821,7 @@ GetString(
 
         if (!NT_SUCCESS(Status))
         {
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
                 __FUNCTION__": %s actual length %d GetDescriptor failed %x\n",
                 fdoContext->FrontEndPath,
                 ActualLength,
@@ -1929,7 +1928,7 @@ GetCurrentConfigurationLocked(
         {
             PUCHAR byte0 = (PUCHAR) &fdoContext->ScratchPad.Data;
             fdoContext->CurrentConfigValue = *byte0;
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
                 __FUNCTION__": %s CurrentConfiguration %d\n",
                 fdoContext->FrontEndPath,
                 fdoContext->CurrentConfigValue);
@@ -2016,7 +2015,7 @@ SetCurrentConfigurationLocked(
     if (NT_SUCCESS(Status))
     {
         fdoContext->CurrentConfigValue = configValue;  // XXX how to deal with non-compliant configs?
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
             __FUNCTION__":  %s %d\n",
             fdoContext->FrontEndPath,
             fdoContext->CurrentConfigValue);
@@ -2026,7 +2025,7 @@ SetCurrentConfigurationLocked(
             //
             // select an interface too.
             //
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
                 __FUNCTION__": %s SET_INTERFACE %d Alternate %d\n",
                 fdoContext->FrontEndPath,
                 InterfaceNumber,
@@ -2161,7 +2160,7 @@ GetUsbInfo(
             FdoContext->FetchOsDescriptor = FALSE;
         }
         FdoContext->ResetDevice = Reset ? TRUE : FALSE;
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s Os Descriptors %s, Reset %s\n",
             FdoContext->FrontEndPath,
             FdoContext->FetchOsDescriptor ? "enabled" : "disabled",
@@ -2300,7 +2299,7 @@ SetUsbInfo(
     }
     else
     {
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s device %S os descriptors %s\n",
             FdoContext->FrontEndPath,
             FdoContext->UsbInfoEntryName,
@@ -2325,7 +2324,7 @@ SetUsbInfo(
     else
     {
         FdoContext->ResetDevice = resetSupport ? TRUE : FALSE;
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__": %s device %S ResetOnStart %s\n",
             FdoContext->FrontEndPath,
             FdoContext->UsbInfoEntryName,
@@ -2944,7 +2943,7 @@ DbgPrintBuffer(
                 buffer,
                 remainder < 8 ? remainder : 8);
 
-            TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
+            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER,
                 "    %03.3d: %02.2x %02.2x %02.2x %02.2x %02.2x %02.2x %02.2x %02.2x\n",
                 index,
                 packet.Generic.Bytes[0],

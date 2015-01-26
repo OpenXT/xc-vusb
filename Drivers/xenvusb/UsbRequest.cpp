@@ -179,7 +179,7 @@ SubmitUrb(
         WdfRequestComplete(Request, STATUS_UNSUCCESSFUL);
         AcquireFdoLock(fdoContext);
 
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+        TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
             __FUNCTION__": Bad URB header\n");
 
         return;
@@ -191,14 +191,16 @@ SubmitUrb(
     Urb->UrbHeader.Status = USBD_STATUS_SUCCESS;
 
     PCHAR UrbFuncString = UrbFunctionToString(Urb->UrbHeader.Function);
+
+    /* --XT-- This might be the source of so much of the info tracing, taking it out...
     ULONG traceLevel = TRACE_LEVEL_VERBOSE;
     if ((Urb->UrbHeader.Function != URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER) &&
         (Urb->UrbHeader.Function != URB_FUNCTION_ISOCH_TRANSFER) &&
         (Urb->UrbHeader.Function != URB_FUNCTION_CLASS_INTERFACE))
     {
         traceLevel = TRACE_LEVEL_INFORMATION;
-    }
-    TraceEvents(traceLevel, TRACE_URB,
+    }*/
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": Start processing Request %p URB Function %s requests on ringbuffer: %d\n",
         Request,
         UrbFuncString,
@@ -254,7 +256,7 @@ SubmitUrb(
 
                 Urb->UrbControlDescriptorRequest.TransferBufferLength = bytesToCopy;
 
-                TraceEvents(traceLevel, TRACE_URB,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                     __FUNCTION__": Device config descriptor %d processed locally %d bytes returned\n",
                     Urb->UrbControlDescriptorRequest.Index,
                     bytesToCopy);
@@ -284,7 +286,7 @@ SubmitUrb(
                 bytesToCopy);
 
             Urb->UrbControlDescriptorRequest.TransferBufferLength = bytesToCopy;
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": device descriptor processed locally %d bytes returned\n",
                 bytesToCopy);
 
@@ -342,7 +344,7 @@ SubmitUrb(
     case URB_FUNCTION_SELECT_CONFIGURATION:
         if (fdoContext->ConfigBusy)
         {
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": URB_FUNCTION_SELECT_CONFIGURATION busy\n");
 
             RequeueRequest(fdoContext, Request);
@@ -970,7 +972,7 @@ ProcessControlTransfer(
             Urb->UrbControlTransfer.PipeHandle);
         if (endpoint)
         {
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": found ea %x direction %s\n",
                 (endpoint->bEndpointAddress & ~USB_ENDPOINT_DIRECTION_MASK),
                 USB_ENDPOINT_DIRECTION_IN(endpoint->bEndpointAddress) ? "In" : "Out");
@@ -1000,7 +1002,7 @@ ProcessControlTransfer(
         EndpointAddress &= (~USB_ENDPOINT_DIRECTION_MASK);
     }
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": ea %x length %d\n",
         EndpointAddress,
         Urb->UrbControlTransfer.TransferBufferLength);
@@ -1089,7 +1091,7 @@ ProcessControlTransferEx(
             Urb->UrbControlTransferEx.PipeHandle);
         if (endpoint)
         {
-            TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+            TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
                 __FUNCTION__": found ea %x direction %s\n",
                 (endpoint->bEndpointAddress & ~USB_ENDPOINT_DIRECTION_MASK),
                 USB_ENDPOINT_DIRECTION_IN(endpoint->bEndpointAddress) ? "In" : "Out");
@@ -1119,7 +1121,7 @@ ProcessControlTransferEx(
         EndpointAddress &= (~USB_ENDPOINT_DIRECTION_MASK);
     }
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": ea %x length %d\n",
         EndpointAddress,
         Urb->UrbControlTransferEx.TransferBufferLength);
@@ -1237,7 +1239,7 @@ ProcessIdleNotificationRequest(
     }
     fdoContext->IdleRequest = Request;
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ": %s IDLE Request %p IdleCallback = %p; IdleContext = %p Device %p accepted and deferred\n",
         fdoContext->FrontEndPath,
         Request,
@@ -1634,7 +1636,7 @@ SetConfiguration(
     packet.Packet.wIndex.Value = 0;
     packet.Packet.wLength = 0;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ": USB Request header RequestType %x Request %x Value %x Index %x Length %x Irp %p\n",
         packet.Packet.bm.Byte,
         packet.Packet.bRequest,
@@ -1809,7 +1811,7 @@ ProcessSelectInterface(
     packet.Packet.wIndex.Value = Interface;
     packet.Packet.wLength = 0;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ": %s Interface %x Alternate %x\n",
         fdoContext->FrontEndPath,
         packet.Packet.wIndex.Value,
@@ -1888,7 +1890,7 @@ PostProcessSelectInterface(
     ASSERT(fdoContext->ConfigBusy);
     fdoContext->ConfigBusy = FALSE;
 
-    TraceEvents(TRACE_LEVEL_ERROR, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ": %s interface %d %d complete\n",
         fdoContext->FrontEndPath,
         Urb->UrbSelectInterface.Interface.InterfaceNumber,
@@ -1906,7 +1908,7 @@ ProcessAbortPipe(
     NTSTATUS Status = STATUS_UNSUCCESSFUL;
     WDF_USB_CONTROL_SETUP_PACKET packet;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ":  Urb %p Request %p\n",
         Urb,
         Request);
@@ -1917,7 +1919,7 @@ ProcessAbortPipe(
         Urb->UrbPipeRequest.PipeHandle);
     if (endpoint)
     {
-        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
             __FUNCTION__ ": found ea %x direction %s\n",
             (endpoint->bEndpointAddress & ~USB_ENDPOINT_DIRECTION_MASK),
             USB_ENDPOINT_DIRECTION_IN(endpoint->bEndpointAddress) ? "In" : "Out");
@@ -1972,7 +1974,7 @@ ProcessClearOrSetFeature(
         return;
     }
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ": target:%x %s %s index:%x\n",
         requestType,
         request == USB_REQUEST_CLEAR_FEATURE ? "CLEAR_FEATURE" : "SET_FEATURE",
@@ -2131,7 +2133,7 @@ ProcessClassOrVendorCommand(
     packet.Packet.wIndex.Value = Urb->UrbControlVendorClassRequest.Index;
     packet.Packet.wLength = (USHORT) Urb->UrbControlVendorClassRequest.TransferBufferLength;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__ ": bm:%x Req:%x Val:%x Ind:%x Len:%x\n",
         packet.Packet.bm.Byte,
         packet.Packet.bRequest,
@@ -2232,7 +2234,7 @@ ProcessGetDescriptor(
     packet.Packet.wLength = (USHORT) Urb->UrbControlDescriptorRequest.TransferBufferLength;
 
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
         __FUNCTION__": %s (%x) Recipient %x Value %x Index %x Length %x Request %p\n",
         DescriptorTypeToString(packet.Packet.wValue.Bytes.HiByte),
         packet.Packet.wValue.Bytes.HiByte,
@@ -2262,7 +2264,7 @@ ProcessGetStatus(
 {
     WDF_USB_CONTROL_SETUP_PACKET packet;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": recipient %x Urb %p Request %p length %x\n",
         Recipient,
         Urb,
@@ -2309,7 +2311,7 @@ ProcessGetStatus(
     packet.Packet.wIndex.Value = Urb->UrbControlGetStatusRequest.Index;
     packet.Packet.wLength = 2;
 
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_URB,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_URB,
         __FUNCTION__": bm:%x Req:%x Val:%x Ind:%x Len:%x\n",
         packet.Packet.bm.Byte,
         packet.Packet.bRequest,
@@ -2366,7 +2368,7 @@ EvtFdoOnHardwareRequestCancelled(
     PUSB_FDO_CONTEXT fdoContext = DeviceGetFdoContext(
         WdfIoQueueGetDevice( WdfRequestGetIoQueue(Request)));
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__": %s Device %p Request %p OnRingbuffer %d\n",
         fdoContext->FrontEndPath,
         fdoContext->WdfDevice,
@@ -2585,7 +2587,7 @@ ResetDeviceWorker(
     AcquireFdoLock(context->FdoContext);    
     WDFREQUEST Request = (WDFREQUEST) context->Params[0];
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DEVICE,
         __FUNCTION__ ": %s Device %p requests on ringbuffer %d\n",
         context->FdoContext->FrontEndPath,
         context->FdoContext->WdfDevice,
@@ -2675,7 +2677,7 @@ AbortEndpointWaitWorker(
     WDFREQUEST Request = (WDFREQUEST) context->Params[1];
     PIPE_DESCRIPTOR * pipe = (PIPE_DESCRIPTOR *) context->Params[2];
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__ ": %s Device %p ea %x request %p pipe %p\n",
         context->FdoContext->FrontEndPath,
         context->FdoContext->WdfDevice,
@@ -2771,7 +2773,7 @@ AbortEndpointWorker(
     UCHAR endpointAddress = (UCHAR) context->Params[0];
     WDFREQUEST Request = (WDFREQUEST) context->Params[1];
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
         __FUNCTION__ ": %s Device %p ea %x request %p pipe %p\n",
         context->FdoContext->FrontEndPath,
         context->FdoContext->WdfDevice,
@@ -2834,7 +2836,7 @@ AbortEndpointWorker(
         WDF_USB_CONTROL_SETUP_PACKET packet;
         RtlZeroMemory(&packet, sizeof(WDF_USB_CONTROL_SETUP_PACKET));
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__ ": %s Device %p endpoint %x\n",
             context->FdoContext->FrontEndPath,
             context->FdoContext->WdfDevice,
@@ -2894,7 +2896,7 @@ AbortEndpointWorker(
             Status = STATUS_UNSUCCESSFUL;
         }
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DEVICE,
+        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DEVICE,
             __FUNCTION__ ": %s Device %p abort pipe %p request for %x succeeded abortWaiters %d\n",
             context->FdoContext->FrontEndPath,
             context->FdoContext,

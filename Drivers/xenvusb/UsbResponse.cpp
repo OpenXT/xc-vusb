@@ -46,7 +46,7 @@ PostProcessScratch(
     IN ULONG BytesTransferred, 
     IN ULONG Data)
 {
-    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DPC,
+    TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
         __FUNCTION__": Completing scratch pad request\n");
 
     fdoContext->ScratchPad.Status = usbdStatus;
@@ -62,7 +62,12 @@ PostProcessScratch(
     }
     if (fdoContext->ScratchPad.Status != USBD_STATUS_SUCCESS)
     {
-        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DPC,
+        // --XT-- The stalled status does not seem like an error, downgrading
+        // to a warning.
+        ULONG level = (fdoContext->ScratchPad.Status == USBD_STATUS_STALL_PID) ?
+            TRACE_LEVEL_WARNING : TRACE_LEVEL_ERROR;
+
+        TraceEvents(level, TRACE_DPC,
             __FUNCTION__": %s Scratch request error %x usbif %s usbd %s\n",
             fdoContext->FrontEndPath,
             usbdStatus,
@@ -100,6 +105,10 @@ PostProcessUrb(
         Status = STATUS_CANCELLED;
     }
     ULONG TraceLevel = NT_SUCCESS(Status) ? TRACE_LEVEL_VERBOSE : TRACE_LEVEL_INFORMATION;
+
+    // --XT-- The stalled status does not seem like an error and fills the log with spew.
+    if (*usbdStatus == USBD_STATUS_STALL_PID)
+        TraceLevel = TRACE_LEVEL_VERBOSE;
     
     TraceEvents(TraceLevel, TRACE_URB,
         __FUNCTION__": %s Device %p Status %x UsbdStatus %x Function %s bytesTransferred %d\n",
@@ -155,7 +164,7 @@ PostProcessUrb(
                 case USB_CONFIGURATION_DESCRIPTOR_TYPE:
                     if (bytesTransferred >= sizeof(USB_CONFIGURATION_DESCRIPTOR))
                     {
-                        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DPC,
+                        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
                             __FUNCTION__": Config descriptor returned length %d\n",
                             bytesTransferred);                  
                     }
@@ -169,7 +178,7 @@ PostProcessUrb(
                         //
                         // stay away from wchar strings at raised IRQL.
                         //
-                        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DPC,
+                        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
                             __FUNCTION__": usb string: length %d type %d\n",
                             stringDescriptor->bLength,
                             stringDescriptor->bDescriptorType);
@@ -179,7 +188,7 @@ PostProcessUrb(
                         //
                         // hmmmm... this ought to be an error?
                         //
-                        TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DPC,
+                        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
                             __FUNCTION__": usb string: bytesTransferred(%d) < USB_STRING_DESCRIPTOR(%d)\n",
                             bytesTransferred,
                             sizeof(USB_STRING_DESCRIPTOR));
@@ -305,13 +314,13 @@ PostProcessUrb(
 
     case URB_FUNCTION_SYNC_RESET_PIPE_AND_CLEAR_STALL:
 
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
                 __FUNCTION__": Clear stall completed with usb status %x\n",
             *usbdStatus);
         break;
 
     case URB_FUNCTION_GET_STATUS_FROM_ENDPOINT:
-        TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+        TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
                 __FUNCTION__": Get status from endpoint %x usb status %x\n",
             Urb->UrbControlGetStatusRequest.Index,
             *usbdStatus);
@@ -330,7 +339,7 @@ PostProcessUrb(
             }
             if (endpointStatus)
             {
-                TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+                TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_DPC,
                 __FUNCTION__": Endpoint status %x\n",
                     *endpointStatus);
             }
@@ -399,7 +408,7 @@ PostProcessSelectInterface(
     ASSERT(fdoContext->ConfigBusy);
     fdoContext->ConfigBusy = FALSE;
 
-    TraceEvents(TRACE_LEVEL_WARNING, TRACE_DPC,
+    TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DPC,
         __FUNCTION__": interface %d %d complete\n",
         Urb->UrbSelectInterface.Interface.InterfaceNumber,
         Urb->UrbSelectInterface.Interface.AlternateSetting);
