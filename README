@@ -11,7 +11,61 @@ __  _____ ________   ___   _ ___| |__   __ _ _| |_
 
 Overview:
 
-A repository to contain the XenClient virtual USB
-Windows front-end (generation 2) driver.
+A repository to contain the OpenXT Para-virtual USB Windows front end driver.
+This driver along with the Linux front and back end drivers are currently
+only in the OpenXT project. Ideally they would supplant the existing version
+that lives in the 2.6.x kernels (and is not yet in the 3.x/4.x lines).
 
 
+Getting:
+
+There are various git tools for Windows. One good choice is Cygwin for a nice
+Unixy environment. A simple choice is GIT-SCM:
+
+http://git-scm.com/download/win
+
+Regardless of the tool used, to be able to build the project, two repositories
+need to be cloned. First clone:
+
+git://github.com/OpenXT/xc-windows.git
+
+The xc-vusb project depends on header files and libraries in this repo. Then
+clone the xc-vusb repo inside the xc-windows.git repo:
+
+git://github.com/OpenXT/xc-vusb.git
+
+
+Building:
+
+First the xc-windows.git code must be built. This requires installing the
+Windows 7 WDK. Once installed use one of the "Longhorn/Vista" build
+environments - this opens a command prompt. Choose x86 or x64 (or both)
+depending on what sort of xc-vusb driver is to be built. Within
+xc-windows.git, run something like:
+
+ build -cbgz
+
+Microsoft Visual Studio 2012 (or later) and the Windows 8 (or later) WDK are
+required to build the xc-vusb driver. The main project file lives here:
+
+Drivers/xenvusb/xenvusb.sln
+
+There are a number of different build targets to choose from. The binaries end
+up here:
+
+Drivers/xenvusb/Win7Release or Win7Debug for 32b
+Drivers/xenvusb/x64/Win7Release or Win7Debug for 64b
+
+Manual driver signing can be done using the xc-windows/do_sign.ps1 script but
+it is probably easier and saner to follow the build instructions here to get
+a proper signed build of the driver:
+
+https://github.com/OpenXT/openxt/wiki/Windows-Build-Machine
+https://github.com/OpenXT/openxt/wiki/Windows-Build-Process
+
+
+Debugging:
+
+There are up to date Windows HVM debugging instruction here:
+
+http://github.com/OpenXT/openxt/wiki/Windows-HVM-Debugging
