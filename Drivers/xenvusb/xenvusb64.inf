@@ -45,6 +45,7 @@ xenvusb.sys  = 1,,
 
 [Standard.NTamd64]
 %xenvusb.DeviceDesc%=xenvusb_Device,  XEN\VUSB
+%xenvusb.DeviceDesc%=xenvusb_Device,  XEN\VHID
 %xenvusb.HubDesc%=xenvusb_NullDevice,  XEN\ROOT_HUB
 
 [xenvusb_Device.NT]
