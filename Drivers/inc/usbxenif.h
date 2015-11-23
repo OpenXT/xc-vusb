@@ -168,7 +168,7 @@ struct usbif_response {
                                    /* for get speed request - the speed. rename? */
 #endif
     int16_t             status;          /* USBIF_RSP_???       */  
-    uint32_t            pad;
+    uint32_t            error_count;     /* total ISOCH error count */
 };
 typedef struct usbif_response usbif_response_t;
 
