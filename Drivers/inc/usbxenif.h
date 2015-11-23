@@ -132,6 +132,7 @@ struct usbif_request {
     uint16_t            pad;
 #endif
     grant_ref_t         gref[USBIF_URB_MAX_SEGMENTS_PER_REQUEST];
+    uint32_t            pad;
 };
 typedef struct usbif_request usbif_request_t;
 
