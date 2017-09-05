@@ -639,6 +639,20 @@ RootHubIfCreateUsbDevice(
         PortStatus,
         hubContext->PortDevice.DeviceHandleRefCount);
 
+    // Give the port device a container Id.
+    UUID randomUUID;
+    NTSTATUS stat = ExUuidCreate(&randomUUID);
+
+    if (NT_SUCCESS(stat))
+    {
+        hubContext->PortDevice.ContainerId = randomUUID;
+    }
+    else
+    {
+        TraceEvents(TRACE_LEVEL_ERROR, TRACE_DEVICE,
+            __FUNCTION__": Could not create container Id for device.\n");
+    }
+
     return STATUS_SUCCESS;
 }
 
